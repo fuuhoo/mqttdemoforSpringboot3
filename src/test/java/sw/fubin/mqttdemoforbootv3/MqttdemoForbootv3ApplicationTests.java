@@ -26,7 +26,6 @@ class MqttdemoForbootv3ApplicationTests {
         options.setPassword("swzs".getBytes());
         options.setCleanStart(false);
         options.setAutomaticReconnect(true);
-
         //关键问题
         options.setSessionExpiryInterval(1800L);
         String clientId = "test222";
@@ -51,6 +50,44 @@ class MqttdemoForbootv3ApplicationTests {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Test
+    void test2() {
+        String broker = "tcp://192.168.128.114:1883";
+        String clientId = "test111";
+        try {
+            org.eclipse.paho.mqttv5.client.MqttClient client = new org.eclipse.paho.mqttv5.client.MqttClient(broker, clientId);
+            MqttConnectionOptions options = new MqttConnectionOptions();
+            options.setUserName("swzs");
+            options.setAutomaticReconnect(true);
+            options.setPassword("swzs".getBytes());
+            options.setCleanStart(false);
+            options.setAutomaticReconnectDelay(0, 120);
+            client.connect(options);
+            String topic = "testRate";
+            for (int i = 1; i <= 1000; i++) {
+                String msg = "=================================test data indexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" + i;
+                org.eclipse.paho.mqttv5.common.MqttMessage message = new org.eclipse.paho.mqttv5.common.MqttMessage(msg.getBytes());
+                message.setQos(2);
+                System.out.println(msg);
+                try {
+                    if (!client.isConnected()) {
+                        client = new org.eclipse.paho.mqttv5.client.MqttClient(broker, clientId);
+                        client.connect(options);
+                    }
+                    client.publish(topic, message);
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
